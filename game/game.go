@@ -19,7 +19,6 @@ func (game *Game) RunGame() {
     point := Point{}
     point.X = game.Body[len(game.Body)-1].X
     point.Y = game.Body[len(game.Body)-1].Y
-    fmt.Println("advance point ", point)
     if game.currDir == Up {
       point.X--
     }
@@ -32,9 +31,8 @@ func (game *Game) RunGame() {
     if game.currDir == Left {
       point.Y--
     }
-    fmt.Println(point)
-    game.render()
     game.advance(point)
+    game.render()
     go keyboardListen(&input)
     game.currDir = <-input
   }
@@ -60,7 +58,7 @@ func InitGame() Game {
       X: 4, Y: 5, PointType: SnakeBody,
     },
   }
-  game.currDir = Up
+  game.currDir = Right
   return game
 }
 
@@ -91,7 +89,6 @@ func (game *Game) advance(point Point) {
     game.Body[i] = temp
     temp = temp2
   }
-  fmt.Println(game.Body)
 }
 
 func clearScreen() {
