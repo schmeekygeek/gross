@@ -1,25 +1,29 @@
 package game
 
 type Point struct {
-  X           int
   Y           int
+  X           int
   PointType   string
 }
 
 type Game struct {
   Points    [10][10]Point
   Body      []Point
-  canGoUp   bool
   food      Point
   score     int
+  currDir   string
 }
 
-
 const (
-  SnakeBody         = "#"
-  SnakeHead         = "$"
-  Food              = "&"
-  Ground            = "_"
+  SnakeBody = "#"
+  Food      = "&"
+  Ground    = "_"
+  
+  // Directions
+  Up        = "k"
+  Down      = "j"
+  Left      = "h"
+  Right     = "l"
 )
 
 // scenarios:
