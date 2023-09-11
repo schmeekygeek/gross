@@ -7,10 +7,22 @@ type Point struct {
 }
 
 type Game struct {
-  Points    [10][10]Point
-  Body      []Point
+
+  // game canvas
+  points    [10][10]Point
+
+  // snake body
+  body      []Point
+
+  // if the snake can go up (snake can't go left or right when it's already going either left or right)
+  // similarly, the snake can't go up and down if it's either going up or down already
+  canGoUp   bool
+
+  // food
   food      Point
   score     int
+
+  // current direction where the snake is headed
   currDir   string
 }
 

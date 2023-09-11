@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"time"
 )
 
 // _____
@@ -13,28 +14,24 @@ import (
 // _#___
 
 func (game *Game) RunGame() {
-  input := make(chan string)
+  go keyboardListen(game)
   for {
     clearScreen()
     point := Point{}
-    point.X = game.Body[len(game.Body)-1].X
-    point.Y = game.Body[len(game.Body)-1].Y
+    point.X = game.body[len(game.body)-1].X
+    point.Y = game.body[len(game.body)-1].Y
     if game.currDir == Up {
       point.X--
-    }
-    if game.currDir == Right {
-      point.Y++
-    }
-    if game.currDir == Down {
+    } else if game.currDir == Down {
       point.X++
-    }
-    if game.currDir == Left {
+    } else if game.currDir == Right {
+      point.Y++
+    } else {
       point.Y--
     }
     game.advance(point)
     game.render()
-    go keyboardListen(&input)
-    game.currDir = <-input
+    time.Sleep(time.Second)
   }
 }
 
@@ -46,48 +43,48 @@ func InitGame() Game {
       canvas[j][i] = Point{j, i, Ground}
     }
   }
-  game.Points = canvas
-  game.Body = []Point{
-    {
-      X: 4, Y: 3, PointType: SnakeBody,
-    },
-    {
-      X: 4, Y: 4, PointType: SnakeBody,
-    },
-    {
-      X: 4, Y: 5, PointType: SnakeBody,
-    },
+  game.points = canvas
+  game.body = []Point{
+    { X: 4, Y: 0, PointType: SnakeBody },
+    { X: 4, Y: 1, PointType: SnakeBody },
+    { X: 4, Y: 2, PointType: SnakeBody },
+    { X: 4, Y: 3, PointType: SnakeBody },
+    { X: 4, Y: 4, PointType: SnakeBody },
   }
   game.currDir = Right
+  game.canGoUp = true
   return game
 }
 
 func (game *Game) render() {
-  for _, val := range game.Body {
-    game.Points[val.X][val.Y].PointType = SnakeBody
+  for _, val := range game.body {
+    game.points[val.X][val.Y].PointType = SnakeBody
   }
-  for i := range game.Points {
-    for j := range game.Points {
-      fmt.Print(game.Points[i][j].PointType)
-      game.Points[i][j].PointType = Ground
+  for i := range game.points {
+    for j := range game.points {
+      fmt.Print(game.points[i][j].PointType)
+      game.points[i][j].PointType = Ground
     }
     fmt.Println()
   }
-  fmt.Printf("Your score: %v", game.score)
-  fmt.Println()
+  fmt.Println("Your score:", game.score)
 }
 
 func (game *Game) advance(point Point) {
   if point.X == 10 || point.Y == 10 || point.X < 0 || point.Y < 0 {
-    fmt.Println("Game over.\nYour score was ", game.score)
-    os.Exit(0)
+    game.gameOver()
   }
   temp := point
   var temp2 Point
-  for i := len(game.Body) - 1; i >= 0; i-- {
-    temp2 = game.Body[i]
-    game.Body[i] = temp
+  for i := len(game.body) - 1; i >= 0; i-- {
+    temp2 = game.body[i]
+    game.body[i] = temp
     temp = temp2
+  }
+  for i := 0; i < len(game.body) - 1; i++ {
+    if point == game.body[i] {
+      game.gameOver()
+    }
   }
 }
 
@@ -97,16 +94,30 @@ func clearScreen() {
   cmd.Run()
 }
 
-func keyboardListen(input *chan string) {
-
+func keyboardListen(game *Game) {
   exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
   // do not display entered characters on the screen
   exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
 
   var b []byte = make([]byte, 1)
-  fmt.Println("hi")
   for {
     os.Stdin.Read(b)
-    *input<-string(b)
+    input := string(b)
+    if input == Down || input == Up {
+      if game.canGoUp {
+        game.currDir = input
+        game.canGoUp = false
+      }
+    } else {
+      if !game.canGoUp {
+        game.currDir = input
+        game.canGoUp = true
+      }
+    }
   }
+}
+
+func (game *Game) gameOver() {
+    fmt.Println("Game over.\nYour score was ", game.score)
+    os.Exit(0)
 }
