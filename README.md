@@ -1,9 +1,9 @@
-# Gross - A snake game written in Go
+# Snog - A snake game written in Go
 
 ## Run
 ```bash
-git clone https://github.com/schmeekygeek/gross.git
-cd gross/
+git clone https://github.com/schmeekygeek/snog.git
+cd snog/
 make run
 ```
 
