@@ -31,7 +31,7 @@ func (game *Game) RunGame() {
     }
     game.advance(point)
     game.render()
-    time.Sleep(time.Second)
+    time.Sleep(200 * time.Millisecond)
   }
 }
 
@@ -77,14 +77,12 @@ func (game *Game) advance(point Point) {
   temp := point
   var temp2 Point
   for i := len(game.body) - 1; i >= 0; i-- {
-    temp2 = game.body[i]
-    game.body[i] = temp
-    temp = temp2
-  }
-  for i := 0; i < len(game.body) - 1; i++ {
     if point == game.body[i] {
       game.gameOver()
     }
+    temp2 = game.body[i]
+    game.body[i] = temp
+    temp = temp2
   }
 }
 
