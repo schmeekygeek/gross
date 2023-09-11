@@ -9,7 +9,7 @@ type Point struct {
 type Game struct {
 
   // game canvas
-  points    [10][10]Point
+  canvas    [10][10]Point
 
   // snake body
   body      []Point
