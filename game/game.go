@@ -1,6 +1,7 @@
 package game
 
 import (
+	"math/rand"
 	"fmt"
 	"os"
 	"os/exec"
@@ -43,43 +44,48 @@ func InitGame() Game {
       canvas[j][i] = Point{j, i, Ground}
     }
   }
-  game.points = canvas
+  game.canvas = canvas
   game.body = []Point{
-    { X: 4, Y: 0, PointType: SnakeBody },
     { X: 4, Y: 1, PointType: SnakeBody },
     { X: 4, Y: 2, PointType: SnakeBody },
     { X: 4, Y: 3, PointType: SnakeBody },
-    { X: 4, Y: 4, PointType: SnakeBody },
   }
   game.currDir = Right
   game.canGoUp = true
+  game.food = Point{7, 5, Food}
+  game.canvas[5][7] = game.food
   return game
 }
 
 func (game *Game) render() {
   for _, val := range game.body {
-    game.points[val.X][val.Y].PointType = SnakeBody
+    game.canvas[val.X][val.Y].PointType = SnakeBody
   }
-  for i := range game.points {
-    for j := range game.points {
-      fmt.Print(game.points[i][j].PointType)
-      game.points[i][j].PointType = Ground
+  for i := range game.canvas {
+    for j := range game.canvas {
+      fmt.Print(game.canvas[i][j].PointType)
+      if game.canvas[i][j].PointType != Food {
+        game.canvas[i][j].PointType = Ground
+      }
     }
     fmt.Println()
   }
+  game.canvas[game.food.X][game.food.Y].PointType = Food
   fmt.Println("Your score:", game.score)
 }
 
 func (game *Game) advance(point Point) {
   if point.X == 10 || point.Y == 10 || point.X < 0 || point.Y < 0 {
     game.gameOver()
+  } else if (point.X == game.food.X && point.Y == game.food.Y) {
+    game.ateFood(point)
   }
   temp := point
   var temp2 Point
   for i := len(game.body) - 1; i >= 0; i-- {
-    if point == game.body[i] {
-      game.gameOver()
-    }
+    // if point == game.body[i] {
+    //   game.gameOver()
+    // }
     temp2 = game.body[i]
     game.body[i] = temp
     temp = temp2
@@ -115,7 +121,15 @@ func keyboardListen(game *Game) {
   }
 }
 
+func (game *Game) ateFood(point Point) {
+  y, x := rand.Intn(10), rand.Intn(10)
+  game.food = Point{y, x, Food}
+  game.canvas[point.X][point.Y].PointType = Food
+  game.body = append(game.body, point)
+  game.score++
+}
+
 func (game *Game) gameOver() {
-    fmt.Println("Game over.\nYour score was ", game.score)
-    os.Exit(0)
+  fmt.Println("Game over.\nYour score was ", game.score)
+  os.Exit(0)
 }
