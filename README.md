@@ -8,6 +8,7 @@ Needs
 git clone https://github.com/schmeekygeek/snog.git
 cd snog/
 sudo make # to install
+snog
 ```
 OR
 ```bash
