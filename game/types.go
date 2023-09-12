@@ -24,6 +24,9 @@ type Game struct {
 
   // current direction where the snake is headed
   currDir   string
+
+  // has lost
+  hasLost   bool
 }
 
 const (

@@ -15,6 +15,7 @@ import (
 // _#___
 
 func (game *Game) RunGame() {
+  game.hasLost = false
   go keyboardListen(game)
   for {
     clearScreen()
@@ -31,6 +32,9 @@ func (game *Game) RunGame() {
       point.Y--
     }
     game.advance(point)
+    if game.hasLost {
+      return
+    }
     game.render()
     time.Sleep(200 * time.Millisecond)
   }
@@ -77,15 +81,16 @@ func (game *Game) render() {
 func (game *Game) advance(point Point) {
   if point.X == 10 || point.Y == 10 || point.X < 0 || point.Y < 0 {
     game.gameOver()
+    return
   } else if (point.X == game.food.X && point.Y == game.food.Y) {
     game.ateFood(point)
   }
   temp := point
   var temp2 Point
   for i := len(game.body) - 1; i >= 0; i-- {
-    // if point == game.body[i] {
-    //   game.gameOver()
-    // }
+    if point == game.body[i] {
+      game.gameOver()
+    }
     temp2 = game.body[i]
     game.body[i] = temp
     temp = temp2
@@ -100,8 +105,6 @@ func clearScreen() {
 
 func keyboardListen(game *Game) {
   exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
-  // do not display entered characters on the screen
-  exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
 
   var b []byte = make([]byte, 1)
   for {
@@ -131,5 +134,5 @@ func (game *Game) ateFood(point Point) {
 
 func (game *Game) gameOver() {
   fmt.Println("Game over.\nYour score was ", game.score)
-  os.Exit(0)
+  game.hasLost = true
 }
