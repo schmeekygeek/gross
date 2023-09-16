@@ -1,11 +1,11 @@
 package game
 
 import (
-	"math/rand"
-	"fmt"
-	"os"
-	"os/exec"
-	"time"
+  "math/rand"
+  "fmt"
+  "os"
+  "os/exec"
+  "time"
 )
 
 // _____
@@ -131,6 +131,6 @@ func (game *Game) ateFood(point Point) {
 }
 
 func (game *Game) gameOver() {
-  fmt.Println("Game over.\nYour score was ", game.score)
+  fmt.Println("Game over.\nYour score was", game.score)
   game.hasLost = true
 }
