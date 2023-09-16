@@ -51,8 +51,6 @@ func InitGame() Game {
   game.canvas = canvas
   game.body = []Point{
     { X: 4, Y: 1, PointType: SnakeBody },
-    { X: 4, Y: 2, PointType: SnakeBody },
-    { X: 4, Y: 3, PointType: SnakeBody },
   }
   game.currDir = Right
   game.canGoUp = true
@@ -88,7 +86,7 @@ func (game *Game) advance(point Point) {
   temp := point
   var temp2 Point
   for i := len(game.body) - 1; i >= 0; i-- {
-    if point == game.body[i] {
+    if point == game.body[i] && i != len(game.body) - 1 {
       game.gameOver()
     }
     temp2 = game.body[i]
