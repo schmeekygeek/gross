@@ -1,11 +1,12 @@
 package game
 
 import (
-  "math/rand"
-  "fmt"
-  "os"
-  "os/exec"
-  "time"
+	"fmt"
+	"math/rand"
+	"os"
+	"os/exec"
+	"sync"
+	"time"
 )
 
 // _____
@@ -16,7 +17,9 @@ import (
 
 func (game *Game) RunGame() {
   game.hasLost = false
-  go keyboardListen(game)
+  wg := sync.WaitGroup{}
+  wg.Wait()
+  go keyboardListen(game, &wg)
   for {
     clearScreen()
     point := Point{}
@@ -36,7 +39,7 @@ func (game *Game) RunGame() {
       return
     }
     game.render()
-    time.Sleep(200 * time.Millisecond)
+    time.Sleep(150 * time.Millisecond)
   }
 }
 
@@ -101,9 +104,9 @@ func clearScreen() {
   cmd.Run()
 }
 
-func keyboardListen(game *Game) {
+func keyboardListen(game *Game, wg *sync.WaitGroup) {
   exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
-
+  paused := false
   var b []byte = make([]byte, 1)
   for {
     os.Stdin.Read(b)
@@ -113,6 +116,15 @@ func keyboardListen(game *Game) {
         game.currDir = input
         game.canGoUp = false
       }
+    } else if input == " " {
+      if !paused {
+        wg.Add(1)
+        paused = true
+      } else {
+        wg.Done()
+        paused = false
+      }
+      fmt.Println("Game paused")
     } else {
       if !game.canGoUp {
         game.currDir = input
