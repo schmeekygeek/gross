@@ -1,7 +1,7 @@
 package main
 
 import (
-  "snake/game"
+  "snog/game"
 )
 
 func main() {
