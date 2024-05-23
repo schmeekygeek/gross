@@ -35,10 +35,10 @@ const (
   Ground    = "_"
   
   // Directions
-  Up        = "k"
-  Down      = "j"
-  Left      = "h"
-  Right     = "l"
+  Up        = "w"
+  Down      = "s"
+  Left      = "a"
+  Right     = "d"
 )
 
 // scenarios:
