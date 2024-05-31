@@ -30,9 +30,9 @@ type Game struct {
 }
 
 const (
-  SnakeBody = "#"
-  Food      = "&"
-  Ground    = "_"
+  SnakeBody = "▞"
+  Food      = "█"
+  Ground    = "░"
   
   // Directions
   Up        = "w"
